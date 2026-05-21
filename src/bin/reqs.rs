@@ -1,0 +1,140 @@
+// from https://www.bing.com/search?q=rust+reqwest+localhost+setup+example&qs=GS&pq=rust+reqwest+localhost+setup&sc=12-28&cvid=36788C8C24DA48349282DA6B0965105B&FORM=QBRE&sp=1&ghc=2&lq=0
+// also brought in lots of bits & pieces from other sites to get it working as desired
+// This belongs in src/bin/ folder. To Run: cargo run --bin reqs
+use log::{debug, error, info, trace, warn};
+use env_logger::Env;
+use reqwest::Client;
+use serde::Serialize;
+use std::error::Error;
+
+#[derive(Serialize)]
+struct PostViolation {
+    title: String,
+    description: String,
+    severity: String,
+    toxicity: String,
+}
+// main only has one http transaction, a POST to a CSP violoation report server
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn Error>> {
+    let env = Env::default()
+        .filter_or("MY_LOG_LEVEL", "info")
+        .write_style_or("MY_LOG_STYLE", "always");
+    env_logger::init_from_env(env);
+    info!("Starting up");
+    let client = Client::new();
+
+    // Example of a  JSON POST to /fnirc7
+    let post_url = "http://localhost:8088/fnirc7";
+    info!("Sending extra long (10K+ chars) POST request to {}", post_url);
+    //the description field is approx 10,000 characters long with some multi-byte chars thrown in to be sure they're handled OK
+    let payload = PostViolation {
+        title: "CSP Violation Report".to_string(),
+        description: "Violated inline-src policy: none. e\u{301} \u{e9} ラウトは難しいです！ yö😊 As of mid-2026, Mount St. Helens remains the most active volcano in the contiguous United States with a Very High threat potential, though it is currently at normal, background activity levels. Known for its catastrophic May 18, 1980 eruption, the volcano has a complex history featuring major explosive eruptions, lava dome growth, and frequent, relatively recent activity between 2004–2008. As of mid-2026, Mount St. Helens /
+remains the most e\u{301} \u{e9} ラウトは難しいです e\u{301} \u{e9}active volcano in the contiguous United States with a Very High threat ラウトは難しいです potential, though it is currently at normal, background activity levels. Known for its catastrophic May 18, 1980 eruption, the volcano has a complex history featuring major explosive eruptions, lava dome growth, and frequent, relatively recent activity between 2004–2008. As of mid-2026, Mount St. Helens remains the most ラウトは難しいですラウトは難しいですラウトは難しいです e\u{301} \u{e9}/
+ラウトは難しいです e\u{301} \u{e9}a Very High threat potential, though it is currently at normal, background activity levels. Known for its catastrophic May 18, 1980 eruption, the volcano has a complex history featuring major explosive eruptions, lava dome growth, and frequent, relatively recent activity between 2004–2008. As of mid-2026, Mount St. Helens remains the most active volcano in the contiguous United States with a Very High threat potential, though it is currently at normal, background activity levels. Known for its /
+catastrophic May 18, 1980 eruption, the volcano has a complex history featuring major explosive eruptions, lava dome growth, and frequent, relatively recent activity between 2004–2008. As of mid-2026, Mount St. Helens remains the most active volcano in the contiguous United States with a Very High threat potential, though it is currently at normal, background activity levels. Known for its catastrophic May 18, 1980 eruption, the volcano has a complex history featuring major explosive eruptions, /
+lava dome growth, and frequent, relatively recent activity between 2004–2008.  As of mid-2026, Mount St. Helens remains the most active volcano in the contiguous United States with a Very High threat potential, though it is currently at normal, background activity levels. Known for its catastrophic May 18, 1980 eruption, the volcano has a complex history featuring major explosive eruptions, lava dome growth, and frequent, relatively recent activity between 2004–2008. As of mid-2026, Mount St. Helens /
+remains the most active volcano in the contiguous United States with a Very High threat potential, though it is currently at normal, background activity levels. Known for its catastrophic May 18, 1980 eruption, the volcano has a complex history featuring major explosive eruptions, lava dome growth, and frequent, relatively recent activity between 2004–2008. As of mid-2026, Mount St. Helens remains the most active volcano in the contiguous United States with a Very High threat potential, though it is /
+currently at normal, background activity levels. Known for its catastrophic May 18, 1980 eruption, the volcano has a complex history featuring major explosive eruptions, lava dome growth, and frequent, relatively recent activity between 2004–2008. As of mid-2026, Mount St. Helens remains the most active volcano in the contiguous United States with a Very High threat potential, though it is currently at normal, background activity levels. Known for its catastrophic May 18, 1980 eruption, the volcano /
+has a complex history featuring major explosive eruptions, lava dome growth, and frequent, relatively recent activity between 2004–2008. As of mid-2026, Mount St. Helens remains the most active volcano in the contiguous United States with a Very High threat potential, though it is currently at normal, background activity levels. Known for its catastrophic May 18, 1980 eruption, the volcano has a complex history featuring major explosive eruptions, lava dome growth, and frequent, relatively recent activity /
+between 2004–2008.  As of mid-2026, Mount St. Helens remains the most active volcano in the contiguous United States with a Very High threat potential, though it is currently at normal, background activity levels. Known for its catastrophic May 18, 1980 eruption, the volcano has a complex history featuring major explosive eruptions, lava dome growth, and frequent, relatively recent activity between 2004–2008. As of mid-2026, Mount St. Helens remains the most active volcano in the contiguous United States /
+with a Very High threat potential, though it is currently at normal, background activity levels. Known for its catastrophic May 18, 1980 eruption, the volcano has a complex history featuring major explosive eruptions, lava dome growth, and frequent, relatively recent activity between 2004–2008. As of mid-2026, Mount St. Helens remains the most active volcano in the contiguous United States with a Very High threat potential, though it is currently at normal, background activity levels. Known for its /
+catastrophic May 18, 1980 eruption, the volcano has a complex history featuring major explosive eruptions, lava dome growth, and frequent, relatively recent activity between 2004–2008. As of mid-2026, Mount St. Helens remains the most active volcano in the contiguous United States with a Very High threat potential, though it is currently at normal, background activity levels. Known for its catastrophic May 18, 1980 eruption, the volcano has a complex history featuring major explosive eruptions, lava dome /
+growth, and frequent, relatively recent activity between 2004–2008. As of mid-2026, Mount St. Helens remains the most active volcano in the contiguous United States with a Very High threat potential, though it is currently at normal, background activity levels. Known for its catastrophic May 18, 1980 eruption, the volcano has a complex history featuring major explosive eruptions, lava dome growth, and frequent, relatively recent activity between 2004–2008.  As of mid-2026, Mount St. Helens remains the most /
+active volcano in the contiguous United States with a Very High threat potential, though it is currently at normal, background activity levels. Known for its catastrophic May 18, 1980 eruption, the volcano has a complex history featuring major explosive eruptions, lava dome growth, and frequent, relatively recent activity between 2004–2008. As of mid-2026, Mount St. Helens remains the most active volcano in the contiguous United States with a Very High threat potential, though it is currently at normal, /
+background activity levels. Known for its catastrophic May 18, 1980 eruption, the volcano has a complex history featuring major explosive eruptions, lava dome growth, and frequent, relatively recent activity between 2004–2008. As of mid-2026, Mount St. Helens remains the most active volcano in the contiguous United States with a Very High threat potential, though it is currently at normal, background activity levels. Known for its catastrophic May 18, 1980 eruption, the volcano has a complex history /
+featuring major explosive eruptions, lava dome growth, and frequent, relatively recent activity between 2004–2008. As of mid-2026, Mount St. Helens remains the most active volcano in the contiguous United States with a Very High threat potential, though it is currently at normal, background activity levels. Known for its catastrophic May 18, 1980 eruption, the volcano has a complex history featuring major explosive eruptions, lava dome growth, and frequent, relatively recent activity between 2004–2008. /
+As of mid-2026, Mount St. Helens remains the most active volcano in the contiguous United States with a Very High threat potential, though it is currently at normal, background activity levels. Known for its catastrophic May 18, 1980 eruption, the volcano has a complex history featuring major explosive eruptions, lava dome growth, and frequent, relatively recent activity between 2004–2008.  As of mid-2026, Mount St. Helens remains the most active volcano in the contiguous United States with a Very High threat /
+potential, though it is currently at normal, background activity levels. Known for its catastrophic May 18, 1980 eruption, the volcano has a complex history featuring major explosive eruptions, lava dome growth, and frequent, relatively recent activity between 2004–2008. As of mid-2026, Mount St. Helens remains the most active volcano in the contiguous United States with a Very High threat potential, though it is currently at normal, background activity levels. Known for its catastrophic May 18, 1980 eruption, /
+the volcano has a complex history featuring major explosive eruptions, lava dome growth, and frequent, relatively recent activity between 2004–2008. As of mid-2026, Mount St. Helens remains the most active volcano in the contiguous United States with a Very High threat potential, though it is currently at normal, background activity levels. Known for its catastrophic May 18, 1980 eruption, the volcano has a complex history featuring major explosive eruptions, lava dome growth, and frequent, relatively recent /
+activity between 2004–2008. As of mid-2026, Mount St. Helens remains the most active volcano in the contiguous United States with a Very High threat potential, though it is currently at normal, background activity levels. Known for its catastrophic May 18, 1980 eruption, the volcano has a complex history featuring major explosive eruptions, lava dome growth, and frequent, relatively recent activity between 2004–2008. As of mid-2026, Mount St. Helens remains the most active volcano in the contiguous United States /
+with a Very High threat potential, though it is currently at normal, background activity levels. Known for its catastrophic May 18, 1980 eruption, the volcano has a complex history featuring major explosive eruptions, lava dome growth, and frequent, relatively recent activity between 2004–2008.though it is currently at normal, background activity levels. Known for its catastrophic May 18, 1980 eruption, the volcano has a complex history featuring major explosive eruptions, lava dome growth, and frequent, /
+relatively recent activity between 2004–2008.".to_string(),
+        severity: "Maximum".to_string(),
+        toxicity: "Level 3".to_string(),
+    };
+    let json_payload = serde_json::to_string(&payload).unwrap();
+    debug!("POST Payload JSON: {}", json_payload);
+
+    let post_violation_response = client.post(post_url)
+        .header("Content-Type", "text/plain")
+        .body(json_payload)
+        .send()
+        .await;
+    let resp_status = post_violation_response.as_ref().map(|r| r.status());
+    info!("POST Response status: {:?}\n", resp_status);
+    let resp_text = post_violation_response.unwrap().text().await.unwrap();
+    debug!("POST Response: {}   NOTE: response should be blank", resp_text); //we're expecting a 204, success, no data returned
+    // ==========================
+    info!("Sending short POST request to {}", post_url);
+    //verify that the receiver can successfully receive short message without shortening
+    let payload = PostViolation {
+        title: "CSP Violation Report".to_string(),
+        description: "Violated inline-src policy: none.".to_string(),
+        severity: "Medium".to_string(),
+        toxicity: "Level 2".to_string(),
+    };
+    let json_payload = serde_json::to_string(&payload).unwrap();
+    debug!("POST Payload JSON: {}", json_payload);
+
+    let post_violation_response = client.post(post_url)
+        .header("Content-Type", "text/plain")
+        .body(json_payload)
+        .send()
+        .await;
+    let resp_status = post_violation_response.as_ref().map(|r| r.status());
+    info!("POST Response status: {:?}\n", resp_status);
+    let resp_text = post_violation_response.unwrap().text().await.unwrap();
+    debug!("POST Response: {}   NOTE: response should be blank", resp_text); //we're expecting a 204, success, no data returned
+    // ==========================
+    info!("Sending short msg with control chars in POST request to {}", post_url);
+    //verify the receiver can handle some control characters, like tab and newline
+    let payload = PostViolation {
+        title: "CSP Violation Report".to_string(),
+        description: "sending tab: \t backslash: \\ dblquote: \" 1quote: \' null(0): \0 newline: \n return: \r ".to_string(),
+        severity: "Low \x41 \u{5769}".to_string(),
+        toxicity: "Level 1".to_string(),
+    };
+    let json_payload = serde_json::to_string(&payload).unwrap();
+    debug!("POST Payload JSON: {}", json_payload);
+
+    let post_violation_response = client.post(post_url)
+        .header("Content-Type", "text/plain")
+        .body(json_payload)
+        .send()
+        .await;
+    let resp_status = post_violation_response.as_ref().map(|r| r.status());
+    info!("POST Response status: {:?}\n", resp_status);
+    let resp_text = post_violation_response.unwrap().text().await.unwrap();
+    debug!("POST Response: {}   NOTE: response should be blank", resp_text); //we're expecting a 204, success, no data returned
+    // ===================================
+    info!("Sending short msg with unicode control chars 0000-0159 in POST request to {}", post_url);
+    //verify the receiver can handle all unicode control characters, from x0 - x1F, x7F - x9F. x7F and up don't have a printable character
+    let payload = PostViolation {
+        title: "CSP Violation Report".to_string(),
+        description: "sending unicode characters: \u{0000}.\u{0001}.\u{0002}.\u{0003}.\u{0004}.\u{0005}.\u{0006}.\u{0007}.\u{0008}.\u{0009}.\u{000A}.\u{000B}.\u{000C}.\u{000D}.\u{000E}.\u{000F}.\u{0010};\u{0011};\u{0012};\u{0013};\u{0014};\u{0015};\u{0016};\u{0017};\u{0018};\u{0019};\u{001A};\u{001B};\u{001C};\u{001D};\u{001E};\u{001F};\u{007F}-\u{0080}-\u{0081}-\u{0082}-\u{0083}-\u{0084}-\u{0085}-\u{0086}-\u{0087}-\u{0088}-\u{0089}-\u{008A}-\u{008B}-\u{008C}-\u{008D}-\u{008E}-\u{008F}=\u{0090}=\u{0091}=\u{0092}=\u{0093}=\u{0094}=\u{0095}=\u{0096}=\u{0097}=\u{0098}=\u{0099}=\u{009A}=\u{009B}=\u{009C}=\u{009D}=\u{009E}=\u{009F}!!!".to_string(),
+        severity: "Low \x41 \u{5769}".to_string(),
+        toxicity: "Level 1".to_string(),
+    };
+    let json_payload = serde_json::to_string(&payload).unwrap();
+    debug!("POST Payload JSON: {}", json_payload);
+
+    let post_violation_response = client.post(post_url)
+        .header("Content-Type", "text/plain")
+        .body(json_payload)
+        .send()
+        .await;
+    let resp_status = post_violation_response.as_ref().map(|r| r.status());
+    info!("POST Response status: {:?}\n", resp_status);
+    let resp_text = post_violation_response.unwrap().text().await.unwrap();
+    debug!("POST Response: {}   NOTE: response should be blank", resp_text); //we're expecting a 204, success, no data returned
+    // ============================
+    trace!("some trace log");
+    debug!("some debug log");
+    info!("some information log");
+    warn!("some warning log");
+    error!("some error log");
+
+    Ok(())
+}
