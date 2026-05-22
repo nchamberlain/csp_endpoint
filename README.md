@@ -31,6 +31,8 @@ The reqs.rs file does the following tests:
 * the next message sends formatting/control characters commonly in Rust strings, such as tabs or newlines in the received message.
 * the final message sends all of the unicode control characters are specifically tested, including 0, 127 and all of the characters from 128 to 159 (x80 - x9F)
 
+Both the csp endpoint and reqs log results. The logging messages are displayed as plain text in the terminal/command window. If desired, set the default logging level to debug to display some more information.
+
 ## Project Design Considerations
 CSP documentation frequently mentions CSP Reporting Endpoints that are to receive information about security and CSP directives violations but they rarely mention what these endpoints are and how they function. There’s just vague statements that assume that they will be there to receive the violation messages.
 
