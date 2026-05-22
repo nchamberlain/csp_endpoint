@@ -129,6 +129,21 @@ relatively recent activity between 2004–2008.".to_string(),
     info!("POST Response status: {:?}\n", resp_status);
     let resp_text = post_violation_response.unwrap().text().await.unwrap();
     debug!("POST Response: {}   NOTE: response should be blank", resp_text); //we're expecting a 204, success, no data returned
+    // ==========================
+    info!("Sending unstructured text POST request to {}", post_url);
+    //verify that the receiver can successfully receive short message without shortening
+    let payload = "CSP Violation Report. This report contains a description of the CSP violation that was encountered. In this case it was a media-src policy of 'none'".to_string();
+    debug!("POST Payload JSON: {}", payload);
+
+    let post_violation_response = client.post(post_url)
+        .header("Content-Type", "text/plain")
+        .body(payload)
+        .send()
+        .await;
+    let resp_status = post_violation_response.as_ref().map(|r| r.status());
+    info!("POST Response status: {:?}\n", resp_status);
+    let resp_text = post_violation_response.unwrap().text().await.unwrap();
+    debug!("POST Response: {}   NOTE: response should be blank", resp_text); //we're expecting a 204, success, no data returned
     // ============================
     trace!("some trace log");
     debug!("some debug log");
