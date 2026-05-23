@@ -25,7 +25,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let client = Client::new();
 
     // Example of a  JSON POST to /fnirc7
-    let post_url = "http://localhost:8088/fnirc7";
+    let post_url = "http://0.0.0.0:8080/fnirc7";
     info!("Sending extra long (10K+ chars) POST request to {}", post_url);
     //the description field is approx 10,000 characters long with some multi-byte chars thrown in to be sure they're handled OK
     let payload = PostViolation {

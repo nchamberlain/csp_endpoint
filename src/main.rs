@@ -9,13 +9,13 @@ use std::fs::OpenOptions;
 async fn main() -> std::io::Result<()> {
     //initialize logging
     env_logger::init_from_env(env_logger::Env::default().default_filter_or("info"));
-    log::info!("Starting server on localhost:8088");
+    log::info!("Starting server on 0.0.0.0:8080");
 
     HttpServer::new(move || {
         App::new()
             .service(submit_violation)
     })
-    .bind("localhost:8088")?
+    .bind("0.0.0.0:8080")?
     .run()
     .await
 }
