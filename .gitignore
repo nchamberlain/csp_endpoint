@@ -2,4 +2,3 @@
 # Mac specific files
 **/.DS_Store
 violations.log
-Cargo.lock
