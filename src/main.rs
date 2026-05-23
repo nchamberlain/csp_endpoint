@@ -1,7 +1,7 @@
 // from https://oneuptime.com/blog/post/2026-02-01-rust-actix-web-rest-api/view
 // stripped down to force server to handle POST requests
 // needs to be identified in [package] section of cargo.toml:  default-run = "rust-api" 
-use actix_web::{App, HttpServer, post};
+use actix_web::{App, HttpServer, post, get, Responder, HttpResponse};
 use std::io::Write;
 use std::fs::OpenOptions;
 
@@ -14,6 +14,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .service(submit_violation)
+            .service(index)
     })
     .bind("0.0.0.0:8080")?
     .run()
@@ -45,3 +46,7 @@ pub async fn submit_violation(body: String) -> std::io::Result<()> {
     Ok(())
 }
 
+#[get("/")]
+async fn index() -> impl Responder {
+    HttpResponse::Ok().body("<endpoint>")
+}
