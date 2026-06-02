@@ -4,6 +4,7 @@
 use actix_web::{App, HttpServer, post, get, Responder, HttpResponse};
 use std::io::Write;
 use std::fs::OpenOptions;
+use chrono::prelude::*;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -15,7 +16,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .service(submit_violation)
             .service(index)
-    })
+    }).workers(8) // set to 8 to see if I can get DigitalOcean to start only one console session
     .bind("0.0.0.0:8080")?
     .run()
     .await
@@ -25,6 +26,7 @@ async fn main() -> std::io::Result<()> {
 pub async fn submit_violation(body: String) -> std::io::Result<()> {
     // truncate excessive length body - probably hacking trying for buffer overflow.
     // If results prove otherwise, the lengths can be adusted
+    let utc: DateTime<Utc> = Utc::now();
     let short_body: &str;
     if body.len() > 2000 { //body.len is in bytes. Short_body is in chars to handle full UTF-8
         let mut indices = body.char_indices();
@@ -34,15 +36,17 @@ pub async fn submit_violation(body: String) -> std::io::Result<()> {
     } else {
         short_body = &body[..];
     }
-    log::info!("body: {:?}", short_body);
+    log::info!("body: {:?} [[length: {}]]", short_body, short_body.len());
     let mut file = OpenOptions::new()
     .write(true)
     .append(true)
     .create(true)
     .open("violations.log")
     .expect("Failed to open file");
-    writeln!(file, "{}", short_body).expect("Write failure");
-    log::info!("Saved string len: {}", short_body.len());
+    let tz_body = format!("[{}] {}\n", utc.to_rfc3339_opts(SecondsFormat::Secs, true), short_body);
+    //log::info!("Body with timezone: {}", tz_body);
+    writeln!(file, "{}", tz_body).expect("Write failure");
+    //log::info!("Saved string len: {}", short_body.len());
     Ok(())
 }
 
