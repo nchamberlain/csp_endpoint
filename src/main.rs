@@ -16,7 +16,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .service(submit_violation)
             .service(index)
-    }).workers(8) // set to 8 to see if I can get DigitalOcean to start only one console session
+    })//.workers(8) //  didn't help reduce D.O. consoles - App was set to have 2 containers
     .bind("0.0.0.0:8080")?
     .run()
     .await
