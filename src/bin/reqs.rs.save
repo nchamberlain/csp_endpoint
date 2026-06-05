@@ -25,7 +25,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let client = Client::new();
 
     // Example of a  JSON POST to /fnirc7
-    let post_url = "http://0.0.0.0:8080/fnirc7";
+    let post_url = "http://localhost:8080/fnirc7";
     info!("Sending extra long (10K+ chars) POST request to {}", post_url);
     //the description field is approx 10,000 characters long with some multi-byte chars thrown in to be sure they're handled OK
     let payload = PostViolation {
@@ -92,7 +92,7 @@ relatively recent activity between 2004–2008.".to_string(),
     //verify the receiver can handle some control characters, like tab and newline
     let payload = PostViolation {
         title: "CSP Violation Report".to_string(),
-        description: "sending tab: \t backslash: \\ dblquote: \" 1quote: \' null(0): \0 newline: \n return: \r ".to_string(),
+        description: "sending tab: \t backslash: \\ dblquote: \" 1quote: \' null(0): \0 newline: \n return: \r  < & > <&&>".to_string(),
         severity: "Low \x41 \u{5769}".to_string(),
         toxicity: "Level 1".to_string(),
     };
@@ -132,7 +132,7 @@ relatively recent activity between 2004–2008.".to_string(),
     // ==========================
     info!("Sending unstructured text POST request to {}", post_url);
     //verify that the receiver can successfully receive short message without shortening
-    let payload = "CSP Violation Report. This report contains a description of the CSP violation that was encountered. In this case it was a media-src policy of 'none'".to_string();
+    let payload = "CSP Violation Report. < & > <&&> This report contains a description of the CSP violation that was encountered. In this case it was a media-src policy of 'none'".to_string();
     debug!("POST Payload JSON: {}", payload);
 
     let post_violation_response = client.post(post_url)

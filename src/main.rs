@@ -2,9 +2,10 @@
 // stripped down to force server to handle POST requests
 // needs to be identified in [package] section of cargo.toml:  default-run = "rust-api" 
 use actix_web::{App, HttpServer, post, get, Responder, HttpResponse};
-use std::io::Write;
+use std::io::{Read, Write};
 use std::fs::OpenOptions;
 use chrono::prelude::*;
+use html_escape::encode_text;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -15,6 +16,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .service(submit_violation)
+            .service(violations)
             .service(index)
     })//.workers(8) //  didn't help reduce D.O. consoles - App was set to have 2 containers
     .bind("0.0.0.0:8080")?
@@ -43,7 +45,7 @@ pub async fn submit_violation(body: String) -> std::io::Result<()> {
     .create(true)
     .open("violations.log")
     .expect("Failed to open file");
-    let tz_body = format!("[{}] {}\n", utc.to_rfc3339_opts(SecondsFormat::Secs, true), short_body);
+    let tz_body = format!("{{\"{}\":{}}}\n", utc.to_rfc3339_opts(SecondsFormat::Secs, true), short_body);
     //log::info!("Body with timezone: {}", tz_body);
     writeln!(file, "{}", tz_body).expect("Write failure");
     //log::info!("Saved string len: {}", short_body.len());
@@ -53,4 +55,28 @@ pub async fn submit_violation(body: String) -> std::io::Result<()> {
 #[get("/")]
 async fn index() -> impl Responder {
     HttpResponse::Ok().body("<endpoint>")
+}
+
+//abui3o  m35qrk  jrusp6
+#[get("/abui3o/m35qrk")]
+async fn violations() -> impl Responder {
+    log::info!("Fetching violations");
+    let mut outmessage = String::new();
+    let file = OpenOptions::new()
+    .write(false)
+    .read(true)
+    .open("violations.log");
+    match file {
+        Ok(mut f) => {
+            let mut contents = String::new();
+            f.read_to_string(&mut contents).expect("Failed to read file");
+            outmessage.push_str(encode_text(&contents).as_ref());
+        },
+        Err(e) => {
+            log::error!("Error opening file: {}", e);
+            outmessage.push_str("Error reading violations");
+        }
+    }
+   
+    HttpResponse::Ok().body(outmessage)
 }
