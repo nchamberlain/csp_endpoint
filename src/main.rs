@@ -45,7 +45,7 @@ pub async fn submit_violation(body: String) -> std::io::Result<()> {
     .create(true)
     .open("violations.log")
     .expect("Failed to open file");
-    let tz_body = format!("{{\"event-timestamp\":\"{}\",{}}}\n", utc.to_rfc3339_opts(SecondsFormat::Secs, true), &short_body[1..]);
+    let tz_body = format!("{{\"event-timestamp\":\"{}\",{}\n", utc.to_rfc3339_opts(SecondsFormat::Secs, true), &short_body[1..]);
     //log::info!("Body with timezone: {}", tz_body);
     writeln!(file, "{}", tz_body).expect("Write failure");
     //log::info!("Saved string len: {}", short_body.len());
