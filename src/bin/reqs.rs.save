@@ -144,6 +144,22 @@ relatively recent activity between 2004–2008.".to_string(),
     info!("POST Response status: {:?}\n", resp_status);
     let resp_text = post_violation_response.unwrap().text().await.unwrap();
     debug!("POST Response: {}   NOTE: response should be blank", resp_text); //we're expecting a 204, success, no data returned
+    // ==========================
+    info!("Sending real CSP POST to {}", post_url);
+    //verify that the receiver can successfully receive short message without shortening
+    let payload = "{\"csp-report\":{\"document-uri\":\"https://weather.necham.org/\",\"referrer\":\"https://weather.necham.org/silly-delete-me/\",\"violated-directive\":\"style-src-elem\",\"effective-directive\":\"style-src-elem\",\"original-policy\":\"default-src 'self'; script-src 'self'; img-src 'self'; report-uri https://shark-app-5zch2.ondigitalocean.app/fnirc7\",\"disposition\":\"report\",\"blocked-uri\":\"inline\",\"line-number\":66,\"source-file\":\"https://weather.necham.org/\",\"status-code\":200,\"script-sample\":\"\"}}".to_string();
+
+    debug!("POST Payload JSON: {}", payload);
+
+    let post_violation_response = client.post(post_url)
+        .header("Content-Type", "text/plain")
+        .body(payload)
+        .send()
+        .await;
+    let resp_status = post_violation_response.as_ref().map(|r| r.status());
+    info!("POST Response status: {:?}\n", resp_status);
+    let resp_text = post_violation_response.unwrap().text().await.unwrap();
+    debug!("POST Response: {}   NOTE: response should be blank", resp_text); //we're expecting a 204, success, no data returned
     // ============================
     trace!("some trace log");
     debug!("some debug log");
