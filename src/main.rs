@@ -48,6 +48,7 @@ pub async fn submit_violation(body: String) -> std::io::Result<()> {
     let tz_body = format!("{},\"event-timestamp\":\"{}\"}}}}",&short_body[..short_body.len()-2], utc.to_rfc3339_opts(SecondsFormat::Secs, true));
     //log::info!("Body with timezone: {}", tz_body);
     writeln!(file, "{}", tz_body).expect("Write failure");
+    file.flush(); //make sure the newline is written after each report line is written
     //log::info!("Saved string len: {}", short_body.len());
     Ok(())
 }
