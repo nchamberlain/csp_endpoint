@@ -2,7 +2,7 @@
 // stripped down to force server to handle POST requests
 // needs to be identified in [package] section of cargo.toml:  default-run = "rust-api" 
 use actix_web::{App, HttpServer, post, get, Responder, HttpResponse};
-use std::io::{Read, Write};
+use std::io::{Read, Write, LineWriter};
 use std::fs::OpenOptions;
 use chrono::prelude::*;
 use html_escape::encode_text;
@@ -39,16 +39,18 @@ pub async fn submit_violation(body: String) -> std::io::Result<()> {
         short_body = &body[..];
     }
     log::info!("body: {:?} [[length: {}]]", short_body, short_body.len());
-    let mut file = OpenOptions::new()
-    .write(true)
-    .append(true)
-    .create(true)
-    .open("violations.log")
-    .expect("Failed to open file");
-    let tz_body = format!("{},\"event-timestamp\":\"{}\"}}}}",&short_body[..short_body.len()-2], utc.to_rfc3339_opts(SecondsFormat::Secs, true));
+    let file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .create(true)
+        .open("violations.log")
+        .expect("Failed to open file");
+    let mut outfile = LineWriter::new(file);
+    let tz_body = format!("{},\"event-timestamp\":\"{}\"}}}}",&short_body[..short_body.len()-2], utc.to_rfc3339_opts(SecondsFormat::Secs, true)).into_bytes();
     //log::info!("Body with timezone: {}", tz_body);
-    writeln!(file, "{}", tz_body).expect("Write failure");
-    file.flush(); //make sure the newline is written after each report line is written
+    let _ = outfile.write_all(&tz_body);
+    //writeln!(file, "{}", tz_body).expect("Write failure");
+    let _ = outfile.flush(); //make sure the newline is written after each report line is written
     //log::info!("Saved string len: {}", short_body.len());
     Ok(())
 }
