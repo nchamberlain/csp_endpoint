@@ -2,6 +2,7 @@
 // stripped down to force server to handle POST requests
 // needs to be identified in [package] section of cargo.toml:  default-run = "rust-api" 
 use actix_web::{App, HttpServer, post, get, Responder, HttpResponse};
+use actix_web_helmet::{Helmet, HelmetMiddleware};
 use std::io::{Read, Write, LineWriter};
 use std::fs::OpenOptions;
 use chrono::prelude::*;
@@ -12,16 +13,16 @@ async fn main() -> std::io::Result<()> {
     //initialize logging
     env_logger::init_from_env(env_logger::Env::default().default_filter_or("info"));
     log::info!("Starting server on 0.0.0.0:8080");
-
+    let helmet: HelmetMiddleware = Helmet::default().try_into().expect("valid headers");
     HttpServer::new(move || {
-        App::new()
+        App::new().wrap(helmet.clone())
             .service(submit_violation)
             .service(violations)
             .service(index)
-    })//.workers(8) //  didn't help reduce D.O. consoles - App was set to have 2 containers
-    .bind("0.0.0.0:8080")?
-    .run()
-    .await
+        })
+        .bind("0.0.0.0:8080")?
+        .run()
+        .await
 }
 
 #[post("/fnirc7")]
