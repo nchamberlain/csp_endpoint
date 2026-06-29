@@ -2,7 +2,7 @@
 // stripped down to force server to handle POST requests
 // needs to be identified in [package] section of cargo.toml:  default-run = "rust-api" 
 use actix_web::{App, HttpServer, post, get, Responder, HttpResponse};
-use actix_web_helmet::{Helmet, HelmetMiddleware, ContentSecurityPolicy};
+//use actix_web_helmet::{Helmet, HelmetMiddleware, ContentSecurityPolicy};
 use std::io::{Read, Write, LineWriter};
 use std::fs::OpenOptions;
 use chrono::prelude::*;
@@ -14,12 +14,13 @@ async fn main() -> std::io::Result<()> {
     env_logger::init_from_env(env_logger::Env::default().default_filter_or("info"));
     log::info!("Starting server on 0.0.0.0:8080");
     // let helmet: HelmetMiddleware = Helmet::default().try_into().expect("valid headers");
-    let csp = ContentSecurityPolicy::default()
-        .style_src(vec!["'self'"]).font_src(vec!["'self'"]).connect_src(vec!["'self'"]);
-    let helmet: Helmet = Helmet::default().add(csp);
-    let mid_helmet: HelmetMiddleware = helmet.try_into().expect("valid headers");
+    //let csp = ContentSecurityPolicy::default()
+    //    .style_src(vec!["'self'"]).font_src(vec!["'self'"]).connect_src(vec!["'self'"]);
+    //let helmet: Helmet = Helmet::default().add(csp);
+    //let mid_helmet: HelmetMiddleware = helmet.try_into().expect("valid headers");
     HttpServer::new(move || {
-        App::new().wrap(mid_helmet.clone())
+        App::new()
+            //.wrap(mid_helmet.clone())
             .service(submit_violation)
             .service(violations)
             .service(index)
